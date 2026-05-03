@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나의 낙원계산기</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --green: #16a34a;
+      --green-soft: #dcfce7;
+      --red: #dc2626;
+      --red-soft: #fee2e2;
+      --yellow: #f59e0b;
+      --yellow-soft: #fef3c7;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, Apple SD Gothic Neo, Noto Sans KR, sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe 0, transparent 34%), var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 60px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .hero-main {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 48%, #38bdf8 100%);
+      color: white;
+      border-radius: 30px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      right: -60px;
+      top: -80px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 4.4vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+    }
+
+    .hero-main p {
+      margin: 0;
+      font-size: 17px;
+      opacity: 0.94;
+      max-width: 700px;
+    }
+
+    .hero-note {
+      background: var(--card);
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .hero-note h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .input-card {
+      padding: 24px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .small-badge {
+      font-size: 12px;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 7px;
+      color: #344054;
+    }
+
+    label span {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: 0.15s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .help {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 0.75fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 15px;
+      height: 48px;
+      font-weight: 900;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-ghost {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .result-stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .result-card {
+      padding: 24px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .metric .name {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .metric .value {
+      font-size: clamp(20px, 2.2vw, 30px);
+      letter-spacing: -0.04em;
+      font-weight: 950;
+      line-height: 1.12;
+    }
+
+    .metric .sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-box {
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 18px;
+      font-weight: 800;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .status-box.good {
+      background: var(--green-soft);
+      color: #14532d;
+    }
+
+    .status-box.bad {
+      background: var(--red-soft);
+      color: #7f1d1d;
+    }
+
+    .status-box.warn {
+      background: var(--yellow-soft);
+      color: #78350f;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .method {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, #fff, #f8fafc);
+    }
+
+    .method h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .method p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .method .big {
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+    }
+
+    .method .small {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .chart-wrap {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: #fff;
+      margin-top: 16px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 320px;
+      display: block;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      margin-top: 16px;
+      max-height: 430px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child { text-align: center; }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      z-index: 1;
+      color: #475467;
+      font-size: 12px;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .explain {
+      padding: 24px;
+    }
+
+    .explain-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .explain-item {
+      border-radius: 18px;
+      background: #f8fafc;
+      padding: 18px;
+      border: 1px solid var(--line);
+    }
+
+    .explain-item h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .explain-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 28px;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 980px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+      .input-card { position: static; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 22px, 1180px); padding-top: 20px; }
+      .hero-main, .hero-note { border-radius: 22px; padding: 24px; }
+      .two, .method-grid, .explain-grid, .summary-grid { grid-template-columns: 1fr; }
+      .buttons { grid-template-columns: 1fr; }
+      canvas { height: 250px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-main">
+        <div class="eyebrow">🌴 돈 때문에 덜 불안한 삶을 계산해보기</div>
+        <h1>나의 낙원계산기</h1>
+        <p>
+          현재 자산, 저축 가능액, 기대수익률, 은퇴 후 생활비를 넣어보며
+          “내가 원하는 삶에는 얼마가 필요할까?”를 대략적으로 확인하는 계산기입니다.
+        </p>
+      </div>
+      <div class="hero-note">
+        <h2>계산기는 점쟁이가 아닙니다</h2>
+        <p>
+          미래를 맞히는 도구라기보다, 지금 내 돈의 흐름을 숫자로 확인하는 거울에 가깝습니다.
+          수익률은 약속이 아니라 가정입니다. 시장은 가끔 담임 없는 3월 교실처럼 흔들릴 수 있습니다.
+        </p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="card input-card">
+        <div class="section-title">
+          <h2>입력값</h2>
+          <span class="small-badge">소수점 가능</span>
+        </div>
+
+        <div class="field">
+          <label for="currentAssets">현재 보유자산 <span>만원</span></label>
+          <input id="currentAssets" type="number" min="0" step="100" value="5000" />
+        </div>
+
+        <div class="field">
+          <label for="annualSaving">현재 연 저축·투자 가능액 <span>만원/년</span></label>
+          <input id="annualSaving" type="number" min="0" step="100" value="1200" />
+          <div class="help">월 100만 원이면 1,200만 원으로 입력합니다.</div>
+        </div>
+
+        <div class="two">
+          <div class="field">
+            <label for="years">은퇴까지 남은 기간 <span>년</span></label>
+            <input id="years" type="number" min="0" step="1" value="25" />
+            <div class="help">0년 입력 가능</div>
+          </div>
+          <div class="field">
+            <label for="annualReturn">기대수익률 <span>%</span></label>
+            <input id="annualReturn" type="number" step="0.1" value="7.0" />
+          </div>
+        </div>
+
+        <div class="two">
+          <div class="field">
+            <label for="savingGrowth">저축 증가율 <span>%</span></label>
+            <input id="savingGrowth" type="number" step="0.1" value="2.5" />
+            <div class="help">연봉·저축액이 매년 늘어나는 비율</div>
+          </div>
+          <div class="field">
+            <label for="inflation">물가상승률 <span>%</span></label>
+            <input id="inflation" type="number" step="0.1" value="2.5" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="monthlyExpense">희망 월 생활비 <span>만원/월, 현재가치</span></label>
+          <input id="monthlyExpense" type="number" min="0" step="10" value="350" />
+          <div class="help">오늘 기준 월 생활비입니다. 은퇴시점 생활비는 물가상승률로 환산합니다.</div>
+        </div>
+
+        <div class="field">
+          <label for="withdrawalRate">인출률 방식 <span>%</span></label>
+          <input id="withdrawalRate" type="number" min="0.1" step="0.1" value="4.0" />
+          <div class="help">기본 4% 룰. 더 보수적으로 보려면 3.5% 등으로 낮춰보세요.</div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn-primary" id="calculateBtn">계산하기</button>
+          <button class="btn-ghost" id="resetBtn">기본값</button>
+        </div>
+      </aside>
+
+      <section class="result-stack">
+        <div class="card result-card">
+          <div class="section-title">
+            <h2>계산 결과</h2>
+            <span class="small-badge" id="modeBadge">자동 계산</span>
+          </div>
+
+          <div class="summary-grid">
+            <div class="metric">
+              <div class="name">은퇴시점 예상자산</div>
+              <div class="value" id="retirementAssets">-</div>
+              <div class="sub">현재자산 + 적립식 투자</div>
+            </div>
+            <div class="metric">
+              <div class="name">은퇴시점 희망 생활비</div>
+              <div class="value" id="futureMonthlyExpense">-</div>
+              <div class="sub">현재 생활비를 물가 반영</div>
+            </div>
+            <div class="metric">
+              <div class="name">현재자산으로 가능한 월 생활비</div>
+              <div class="value" id="possibleMonthlyExpense">-</div>
+              <div class="sub">4% 인출률 기준</div>
+            </div>
+            <div class="metric">
+              <div class="name">목표 대비 차이</div>
+              <div class="value" id="gapAmount">-</div>
+              <div class="sub" id="gapSub">4% 인출률 기준</div>
+            </div>
+          </div>
+
+          <div id="statusBox" class="status-box warn">
+            <div>💡</div>
+            <div>입력값을 확인하고 계산 버튼을 눌러주세요.</div>
+          </div>
+        </div>
+
+        <div class="card result-card">
+          <div class="section-title">
+            <h2>두 가지 목표금액 비교</h2>
+            <span class="small-badge">원금보존 vs 인출률</span>
+          </div>
+
+          <div class="method-grid">
+            <div class="method">
+              <h3>원금보존 방식</h3>
+              <p>수익률에서 물가상승률을 뺀 실질 초과수익만 생활비로 쓴다고 보는 방식입니다.</p>
+              <div class="big" id="requiredCapitalPreservation">-</div>
+              <div class="small" id="realReturnText">실질 사용 가능 수익률: -</div>
+            </div>
+            <div class="method">
+              <h3>4% 인출률 방식</h3>
+              <p>은퇴시점 전체 자산 중 매년 일정 비율만 꺼내 쓴다고 보는 간편 기준입니다.</p>
+              <div class="big" id="requiredWithdrawal">-</div>
+              <div class="small" id="withdrawalText">인출률: -</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card result-card">
+          <div class="section-title">
+            <h2>자산 추이 그래프</h2>
+            <span class="small-badge">브라우저 계산</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="assetChart" width="1000" height="420"></canvas>
+          </div>
+        </div>
+
+        <div class="card result-card">
+          <div class="section-title">
+            <h2>연도별 상세표</h2>
+            <span class="small-badge">만원 단위</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>연차</th>
+                  <th>연초자산</th>
+                  <th>연 저축액</th>
+                  <th>투자수익</th>
+                  <th>연말자산</th>
+                  <th>현재가치 환산</th>
+                </tr>
+              </thead>
+              <tbody id="yearlyTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card explain">
+          <div class="section-title">
+            <h2>계산 방식 설명</h2>
+          </div>
+          <div class="explain-grid">
+            <div class="explain-item">
+              <h3>원금보존 방식</h3>
+              <p>
+                기대수익률이 7%, 물가상승률이 2.5%라면 실제로 생활비로 쓸 수 있다고 보는 비율은 4.5%입니다.
+                원금의 구매력을 지키는 데 필요한 물가상승분은 남겨둔다고 보는 방식입니다.
+              </p>
+            </div>
+            <div class="explain-item">
+              <h3>4% 인출률 방식</h3>
+              <p>
+                은퇴자산의 4%를 1년 생활비로 쓴다고 보는 간편 기준입니다.
+                예를 들어 10억 원이면 연 4,000만 원, 월 약 333만 원입니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <div class="footer">
+      이 계산기는 교육용 단순 시뮬레이션입니다. 세금, 건강보험료, 시장 변동성, 실제 은퇴 후 지출 변화는 반영하지 않습니다.
+    </div>
+  </main>
+
+  <script>
+    const DEFAULTS = {
+      currentAssets: 5000,
+      annualSaving: 1200,
+      years: 25,
+      annualReturn: 7.0,
+      savingGrowth: 2.5,
+      inflation: 2.5,
+      monthlyExpense: 350,
+      withdrawalRate: 4.0
+    };
+
+    const ids = Object.keys(DEFAULTS);
+    const $ = (id) => document.getElementById(id);
+
+    function toNumber(id) {
+      const value = Number($(id).value);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function pct(value) {
+      return value / 100;
+    }
+
+    function formatWonMan(value) {
+      if (!Number.isFinite(value)) return "계산 불가";
+      const sign = value < 0 ? "-" : "";
+      const abs = Math.abs(value);
+
+      if (abs >= 10000) {
+        const eok = abs / 10000;
+        return `${sign}${eok.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}억`;
+      }
+      return `${sign}${abs.toLocaleString("ko-KR", { maximumFractionDigits: 0 })}만`;
+    }
+
+    function formatMoney(value) {
+      if (!Number.isFinite(value)) return "계산 불가";
+      return `${Math.round(value).toLocaleString("ko-KR")}만 원`;
+    }
+
+    function formatPercent(value) {
+      if (!Number.isFinite(value)) return "-";
+      return `${(value * 100).toLocaleString("ko-KR", { maximumFractionDigits: 2 })}%`;
+    }
+
+    function saveInputs() {
+      const data = {};
+      ids.forEach(id => data[id] = $(id).value);
+      localStorage.setItem("paradiseCalculatorInputs", JSON.stringify(data));
+    }
+
+    function loadInputs() {
+      const raw = localStorage.getItem("paradiseCalculatorInputs");
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        ids.forEach(id => {
+          if (data[id] !== undefined) $(id).value = data[id];
+        });
+      } catch (e) {}
+    }
+
+    function resetInputs() {
+      ids.forEach(id => $(id).value = DEFAULTS[id]);
+      saveInputs();
+      calculate();
+    }
+
+    function simulate({ currentAssets, annualSaving, years, annualReturn, savingGrowth, inflation }) {
+      const rows = [];
+      let asset = currentAssets;
+
+      rows.push({
+        year: 0,
+        startAsset: currentAssets,
+        saving: 0,
+        investmentGain: 0,
+        endAsset: currentAssets,
+        realValue: currentAssets
+      });
+
+      if (years <= 0) return rows;
+
+      for (let y = 1; y <= years; y++) {
+        const startAsset = asset;
+        const saving = annualSaving * Math.pow(1 + savingGrowth, y - 1);
+        const investmentGain = startAsset * annualReturn;
+        asset = startAsset * (1 + annualReturn) + saving;
+        const realValue = asset / Math.pow(1 + inflation, y);
+
+        rows.push({ year: y, startAsset, saving, investmentGain, endAsset: asset, realValue });
+      }
+      return rows;
+    }
+
+    function drawChart(rows, targetWithdrawal, targetCapitalPreservation) {
+      const canvas = $("assetChart");
+      const ctx = canvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const cssWidth = canvas.clientWidth;
+      const cssHeight = canvas.clientHeight;
+      canvas.width = cssWidth * dpr;
+      canvas.height = cssHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+      const pad = { left: 72, right: 26, top: 26, bottom: 48 };
+      const w = cssWidth - pad.left - pad.right;
+      const h = cssHeight - pad.top - pad.bottom;
+
+      const values = rows.map(r => r.endAsset);
+      const maxTarget = Math.max(targetWithdrawal || 0, targetCapitalPreservation || 0);
+      const maxValue = Math.max(...values, maxTarget, 1) * 1.12;
+      const xMax = Math.max(rows.length - 1, 1);
+
+      function x(i) { return pad.left + (i / xMax) * w; }
+      function y(v) { return pad.top + h - (v / maxValue) * h; }
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#667085";
+      ctx.font = "12px sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+
+      for (let i = 0; i <= 4; i++) {
+        const val = (maxValue / 4) * i;
+        const yy = y(val);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yy);
+        ctx.lineTo(cssWidth - pad.right, yy);
+        ctx.stroke();
+        ctx.fillText(formatWonMan(val), pad.left - 10, yy);
+      }
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      const labelCount = Math.min(6, rows.length);
+      for (let i = 0; i < labelCount; i++) {
+        const idx = Math.round((xMax / Math.max(labelCount - 1, 1)) * i);
+        ctx.fillText(`${idx}년`, x(idx), cssHeight - pad.bottom + 16);
+      }
+
+      function drawTargetLine(value, color, label) {
+        if (!Number.isFinite(value) || value <= 0) return;
+        const yy = y(value);
+        ctx.strokeStyle = color;
+        ctx.setLineDash([8, 6]);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yy);
+        ctx.lineTo(cssWidth - pad.right, yy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = color;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.font = "12px sans-serif";
+        ctx.fillText(label, pad.left + 8, yy - 5);
+      }
+
+      drawTargetLine(targetWithdrawal, "#7c3aed", "인출률 목표");
+      drawTargetLine(targetCapitalPreservation, "#f59e0b", "원금보존 목표");
+
+      const gradient = ctx.createLinearGradient(0, pad.top, 0, cssHeight - pad.bottom);
+      gradient.addColorStop(0, "rgba(37, 99, 235, 0.25)");
+      gradient.addColorStop(1, "rgba(37, 99, 235, 0.02)");
+
+      ctx.beginPath();
+      rows.forEach((r, i) => {
+        const xx = x(i);
+        const yy = y(r.endAsset);
+        if (i === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
+      });
+      ctx.lineTo(x(rows.length - 1), y(0));
+      ctx.lineTo(x(0), y(0));
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.beginPath();
+      rows.forEach((r, i) => {
+        const xx = x(i);
+        const yy = y(r.endAsset);
+        if (i === 0) ctx.moveTo(xx, yy);
+        else ctx.lineTo(xx, yy);
+      });
+      ctx.strokeStyle = "#2563eb";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      const last = rows[rows.length - 1];
+      ctx.fillStyle = "#2563eb";
+      ctx.beginPath();
+      ctx.arc(x(rows.length - 1), y(last.endAsset), 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function renderTable(rows) {
+      const tbody = $("yearlyTable");
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${r.year}년</td>
+          <td>${formatMoney(r.startAsset)}</td>
+          <td>${formatMoney(r.saving)}</td>
+          <td>${formatMoney(r.investmentGain)}</td>
+          <td><strong>${formatMoney(r.endAsset)}</strong></td>
+          <td>${formatMoney(r.realValue)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function calculate() {
+      const input = {
+        currentAssets: Math.max(0, toNumber("currentAssets")),
+        annualSaving: Math.max(0, toNumber("annualSaving")),
+        years: Math.max(0, Math.floor(toNumber("years"))),
+        annualReturn: pct(toNumber("annualReturn")),
+        savingGrowth: pct(toNumber("savingGrowth")),
+        inflation: pct(toNumber("inflation")),
+        monthlyExpense: Math.max(0, toNumber("monthlyExpense")),
+        withdrawalRate: pct(Math.max(0.1, toNumber("withdrawalRate")))
+      };
+
+      saveInputs();
+
+      const rows = simulate(input);
+      const last = rows[rows.length - 1];
+      const retirementAssets = last.endAsset;
+      const futureMonthlyExpense = input.monthlyExpense * Math.pow(1 + input.inflation, input.years);
+      const futureAnnualExpense = futureMonthlyExpense * 12;
+      const realReturn = input.annualReturn - input.inflation;
+      const requiredCapitalPreservation = realReturn > 0 ? futureAnnualExpense / realReturn : NaN;
+      const requiredWithdrawal = input.withdrawalRate > 0 ? futureAnnualExpense / input.withdrawalRate : NaN;
+      const possibleMonthlyExpense = retirementAssets * input.withdrawalRate / 12;
+      const gap = retirementAssets - requiredWithdrawal;
+
+      $("retirementAssets").textContent = formatWonMan(retirementAssets);
+      $("futureMonthlyExpense").textContent = `${formatWonMan(futureMonthlyExpense)}/월`;
+      $("possibleMonthlyExpense").textContent = `${formatWonMan(possibleMonthlyExpense)}/월`;
+      $("gapAmount").textContent = formatWonMan(gap);
+      $("requiredCapitalPreservation").textContent = formatWonMan(requiredCapitalPreservation);
+      $("requiredWithdrawal").textContent = formatWonMan(requiredWithdrawal);
+      $("realReturnText").textContent = `실질 사용 가능 수익률: ${formatPercent(realReturn)}`;
+      $("withdrawalText").textContent = `인출률: ${formatPercent(input.withdrawalRate)}`;
+      $("gapSub").textContent = `${formatPercent(input.withdrawalRate)} 인출률 기준`;
+      $("modeBadge").textContent = input.years === 0 ? "은퇴 0년 계산" : `${input.years}년 후 은퇴`;
+
+      const statusBox = $("statusBox");
+      if (realReturn <= 0) {
+        statusBox.className = "status-box warn";
+        statusBox.innerHTML = `<div>⚠️</div><div>기대수익률이 물가상승률보다 낮거나 같습니다. 원금보존 방식으로는 목표금액 계산이 어렵습니다. 물가가 내 수익률을 이기는 상태, 즉 계좌판 추월차선입니다.</div>`;
+      } else if (gap >= 0) {
+        statusBox.className = "status-box good";
+        statusBox.innerHTML = `<div>✅</div><div>현재 입력값 기준으로는 4% 인출률 목표금액을 약 ${formatWonMan(gap)} 초과합니다. 단, 실제 은퇴 준비에서는 세금, 건강보험료, 시장 하락 구간도 함께 고려해야 합니다.</div>`;
+      } else {
+        statusBox.className = "status-box bad";
+        statusBox.innerHTML = `<div>🔥</div><div>현재 입력값 기준으로는 4% 인출률 목표금액까지 약 ${formatWonMan(Math.abs(gap))} 부족합니다. 낙원이 멀어진 게 아니라, 내 숫자가 드디어 보이기 시작한 겁니다.</div>`;
+      }
+
+      renderTable(rows);
+      drawChart(rows, requiredWithdrawal, requiredCapitalPreservation);
+    }
+
+    ids.forEach(id => {
+      $(id).addEventListener("input", () => {
+        calculate();
+      });
+    });
+
+    $("calculateBtn").addEventListener("click", calculate);
+    $("resetBtn").addEventListener("click", resetInputs);
+    window.addEventListener("resize", () => calculate());
+
+    loadInputs();
+    calculate();
+  </script>
+</body>
+</html>
